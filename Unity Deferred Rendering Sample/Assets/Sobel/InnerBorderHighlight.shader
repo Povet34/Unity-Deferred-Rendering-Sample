@@ -38,8 +38,8 @@ Shader "Custom/InnerBorderHighlight"
 
             float4 _BorderColor;
             float  _DepthThreshold;
+            float  _BorderWidth;
             float  _AlbedoMix;
-            float _BorderWidth;
 
             // --------------------------------------------------
             // Depth를 선형 Eye Depth로 변환해서 샘플링
@@ -118,11 +118,19 @@ Shader "Custom/InnerBorderHighlight"
                 float innerBorder = InnerBorder(uv, texelSize, _DepthThreshold);
                 innerBorder *= saturate(weightedEdge * 10.0);
 
-                // Border 색상 = BorderColor + Albedo Mix
-                half3 borderCol = lerp(_BorderColor.rgb, albedo, _AlbedoMix);
+                // Border 색상 = BorderColor에 Albedo 색상을 물들이기
+                // AlbedoMix = 0 -> 순수 BorderColor
+                // AlbedoMix = 1 -> BorderColor * Albedo
+                half3 tintedAlbedo = lerp(half3(1,1,1), albedo, _AlbedoMix);
+                half3 borderCol = _BorderColor.rgb * tintedAlbedo;
 
-                // 최종 합성
-                half3 finalColor = lerp(sceneColor.rgb, borderCol, innerBorder * _BorderColor.a);
+                // 선 강도 = innerBorder * BorderColor.a * HighlightStrength 반영
+                float borderMask = innerBorder * _BorderColor.a * (1.0 + highlightStrength * 5.0);
+                borderMask = saturate(borderMask);
+
+                // 씬 색상 위에 네온 선을 Additive로 덧씌움
+                // -> 씬이 보존되고 선이 발광하는 느낌
+                half3 finalColor = sceneColor.rgb + borderCol * borderMask;
 
                 return half4(finalColor, sceneColor.a);
             }
