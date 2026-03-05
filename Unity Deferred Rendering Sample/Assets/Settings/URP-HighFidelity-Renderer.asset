@@ -49,10 +49,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 1
   settings:
-    borderColor: {r: 0, g: 0, b: 0, a: 1}
-    depthThreshold: 0.3
-    albedoMix: 0
-    borderWidth: 7.19
+    borderColor: {r: 1, g: 1, b: 1, a: 1}
+    depthThreshold: 0.45
+    albedoMix: 0.492
+    borderWidth: 4.45
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
